@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Java Full Stack Event Management System with Spring Boot, MySQL and RESTful Web UI">
+  <title>EventPulse | Java Full Stack Event Management System</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <header class="navbar">
+    <div class="container nav-content">
+      <a href="#" class="logo">
+        <div class="logo-icon">
+          <i class="fa-solid fa-calendar-star"></i>
+        </div>
+        <span>Event<span class="gradient-text">Pulse</span> <small style="font-size:0.65rem; background:var(--accent-primary); padding:0.2rem 0.5rem; border-radius:var(--radius-full); margin-left:0.5rem; text-transform:uppercase;">Java & MySQL</small></span>
+      </a>
+
+      <div class="nav-actions">
+        <button id="themeToggleBtn" class="btn btn-icon" title="Toggle Light/Dark Theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+        <button id="createEventBtn" class="btn btn-primary">
+          <i class="fa-solid fa-plus"></i> Create Event
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" id="main-content">
+    
+    <section class="hero">
+      <h1 class="hero-title">Java Spring Boot & MySQL <br><span class="gradient-text">Event Management System</span></h1>
+      <p class="hero-subtitle">Enterprise REST backend powered by Spring Boot & MySQL paired with an interactive glassmorphism web interface.</p>
+    </section>
+
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue">
+          <i class="fa-solid fa-calendar-check"></i>
+        </div>
+        <div class="stat-info">
+          <h4>Total Events</h4>
+          <div id="statTotalEvents" class="stat-number">0</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon pink">
+          <i class="fa-solid fa-ticket"></i>
+        </div>
+        <div class="stat-info">
+          <h4>Tickets Sold</h4>
+          <div id="statTicketsSold" class="stat-number">0</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon emerald">
+          <i class="fa-solid fa-dollar-sign"></i>
+        </div>
+        <div class="stat-info">
+          <h4>Total Revenue</h4>
+          <div id="statTotalRevenue" class="stat-number">$0</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon amber">
+          <i class="fa-solid fa-bolt"></i>
+        </div>
+        <div class="stat-info">
+          <h4>Active Events</h4>
+          <div id="statActiveEvents" class="stat-number">0</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <div class="toolbar-top">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="searchInput" placeholder="Search events by title, keyword, or venue...">
+        </div>
+        
+        <select id="statusFilter" class="filter-select">
+          <option value="all">All Statuses</option>
+          <option value="upcoming">Upcoming</option>
+          <option value="ongoing">Ongoing</option>
+          <option value="past">Past</option>
+        </select>
+      </div>
+
+      <div class="category-pills" id="categoryPills">
+        <button class="pill active" data-category="all">All Categories</button>
+        <button class="pill" data-category="Conference">Conferences</button>
+        <button class="pill" data-category="Concert">Concerts</button>
+        <button class="pill" data-category="Workshop">Workshops</button>
+        <button class="pill" data-category="Meetup">Meetups</button>
+      </div>
+    </section>
+
+    <section>
+      <div class="events-header">
+        <h3 id="eventsHeading">Explore Events</h3>
+        <span id="eventsCount" style="color: var(--text-secondary); font-weight: 600;">0 events found</span>
+      </div>
+
+      <div class="events-grid" id="eventsGrid">
+        <!-- Event Cards dynamically injected -->
+      </div>
+    </section>
+
+  </main>
+
+  <div class="modal-backdrop" id="eventDetailsModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="detailTitle">Event Title</h3>
+        <button class="modal-close" data-close-modal="eventDetailsModal">&times;</button>
+      </div>
+      <div class="modal-body" id="detailBody"></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="createEventModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="formModalTitle">Create New Event</h3>
+        <button class="modal-close" data-close-modal="createEventModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="eventForm">
+          <input type="hidden" id="eventId">
+
+          <div class="form-group">
+            <label for="eventTitleInput">Event Title *</label>
+            <input type="text" id="eventTitleInput" class="form-control" placeholder="e.g. AI & Cloud Architecture Summit" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="eventCategorySelect">Category *</label>
+              <select id="eventCategorySelect" class="form-control" required>
+                <option value="Conference">Conference</option>
+                <option value="Concert">Concert</option>
+                <option value="Workshop">Workshop</option>
+                <option value="Meetup">Meetup</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="eventPriceInput">Ticket Price ($) *</label>
+              <input type="number" id="eventPriceInput" class="form-control" min="0" placeholder="0 for Free" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="eventDateInput">Date *</label>
+              <input type="date" id="eventDateInput" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+              <label for="eventTimeInput">Time *</label>
+              <input type="text" id="eventTimeInput" class="form-control" placeholder="e.g. 09:00 AM - 04:00 PM" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="eventVenueInput">Venue & Hall *</label>
+              <input type="text" id="eventVenueInput" class="form-control" placeholder="e.g. Grand Auditorium, Hall B" required>
+            </div>
+
+            <div class="form-group">
+              <label for="eventCapacityInput">Capacity (Seats) *</label>
+              <input type="number" id="eventCapacityInput" class="form-control" min="1" placeholder="e.g. 250" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="eventLocationInput">City & State / Country *</label>
+            <input type="text" id="eventLocationInput" class="form-control" placeholder="e.g. San Francisco, CA" required>
+          </div>
+
+          <div class="form-group">
+            <label for="eventCoverUrlInput">Cover Image URL</label>
+            <input type="url" id="eventCoverUrlInput" class="form-control" placeholder="https://images.unsplash.com/...">
+          </div>
+
+          <div class="form-group">
+            <label for="eventDescInput">Description *</label>
+            <textarea id="eventDescInput" class="form-control" rows="4" placeholder="Provide a detailed overview of the event..." required></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+            <button type="button" class="btn btn-secondary" data-close-modal="createEventModal">Cancel</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> Save Event</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="bookingModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>Reserve Your Ticket</h3>
+        <button class="modal-close" data-close-modal="bookingModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="bookingForm">
+          <input type="hidden" id="bookingEventId">
+          
+          <div style="background: var(--bg-primary); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.25rem; border: 1px solid var(--border-color);">
+            <h4 id="bookingEventTitle" style="font-weight: 700; color: var(--accent-primary);">Event Title</h4>
+            <p id="bookingEventSub" style="font-size: 0.85rem; color: var(--text-secondary);">Date & Venue</p>
+          </div>
+
+          <div class="form-group">
+            <label for="attendeeNameInput">Full Name *</label>
+            <input type="text" id="attendeeNameInput" class="form-control" placeholder="Jane Doe" required>
+          </div>
+
+          <div class="form-group">
+            <label for="attendeeEmailInput">Email Address *</label>
+            <input type="email" id="attendeeEmailInput" class="form-control" placeholder="jane@example.com" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="ticketTypeSelect">Pass Tier</label>
+              <select id="ticketTypeSelect" class="form-control">
+                <option value="Standard">Standard Pass</option>
+                <option value="VIP">VIP Access Pass (+$50)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="ticketCountInput">Quantity *</label>
+              <input type="number" id="ticketCountInput" class="form-control" value="1" min="1" max="10" required>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-primary); padding: 1rem; border-radius: var(--radius-md); margin: 1.25rem 0;">
+            <span style="font-weight: 600;">Total Price:</span>
+            <span id="bookingTotalPrice" style="font-size: 1.4rem; font-weight: 800; color: var(--accent-emerald);">$0</span>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn btn-secondary" data-close-modal="bookingModal">Cancel</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-ticket"></i> Confirm & Pay</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="ticketPassModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>🎉 Booking Confirmed!</h3>
+        <button class="modal-close" data-close-modal="ticketPassModal">&times;</button>
+      </div>
+      <div class="modal-body" id="ticketPassBody"></div>
+    </div>
+  </div>
+
+  <script src="js/mockData.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
